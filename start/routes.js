@@ -23,3 +23,9 @@ Route.get('/', () => {
 // Auth route
 Route.post('/auth/register', 'AuthController.register')
 Route.post('/auth/login', 'AuthController.login')
+
+Route.group(() => {
+  Route.resource('projects', 'ProjectController')
+})
+  .prefix('api/v1')
+  .middleware('auth')
