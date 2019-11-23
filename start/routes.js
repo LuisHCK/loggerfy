@@ -17,15 +17,18 @@
 const Route = use('Route')
 
 Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
+    return { greeting: 'Hello world in JSON' }
 })
 
-// Auth route
-Route.post('/auth/register', 'AuthController.register')
-Route.post('/auth/login', 'AuthController.login')
-
+// API
 Route.group(() => {
-  Route.resource('projects', 'ProjectController')
+    Route.post('/auth/register', 'AuthController.register')
+    Route.post('/auth/login', 'AuthController.login')
+}).prefix('api')
+
+// API V1 NAMESPACE
+Route.group(() => {
+    Route.resource('projects', 'ProjectController')
 })
-  .prefix('api/v1')
-  .middleware('auth')
+    .prefix('api/v1')
+    .middleware('auth')

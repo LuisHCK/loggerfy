@@ -12,9 +12,10 @@ class Project extends Model {
     static getValidationRules() {
         return {
             name: 'required',
-            description: '',
-            photo: '',
-            active: ''
+            description: 'string',
+            photo: 'string',
+            active: 'boolean'
+            lang: 'required|string'
         }
     }
 }

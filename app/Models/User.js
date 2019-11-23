@@ -7,40 +7,58 @@ const Model = use('Model')
 const Hash = use('Hash')
 
 class User extends Model {
-  static boot() {
-    super.boot()
+    static boot() {
+        super.boot()
+
+        /**
+         * A hook to hash the user password before saving
+         * it to the database.
+         */
+        this.addHook('beforeSave', async userInstance => {
+            if (userInstance.dirty.password) {
+                userInstance.password = await Hash.make(userInstance.password)
+            }
+        })
+    }
 
     /**
-     * A hook to hash the user password before saving
-     * it to the database.
+     * A relationship on tokens is required for auth to
+     * work. Since features like `refreshTokens` or
+     * `rememberToken` will be saved inside the
+     * tokens table.
+     *
+     * @method tokens
+     *
+     * @return {Object}
      */
-    this.addHook('beforeSave', async (userInstance) => {
-      if (userInstance.dirty.password) {
-        userInstance.password = await Hash.make(userInstance.password)
-      }
-    })
-  }
+    tokens() {
+        return this.hasMany('App/Models/Token')
+    }
 
-  /**
-   * A relationship on tokens is required for auth to
-   * work. Since features like `refreshTokens` or
-   * `rememberToken` will be saved inside the
-   * tokens table.
-   *
-   * @method tokens
-   *
-   * @return {Object}
-   */
-  tokens() {
-    return this.hasMany('App/Models/Token')
-  }
+    /**
+     * Related projects
+     */
+    projects() {
+        return this.hasMany('App/Models/Project')
+    }
 
-  /**
-   * Related projects
-   */
-  projects() {
-    return this.hasMany('App/Models/Project')
-  }
+    /**
+     * HIDDEN FIELDS
+     */
+    static get hidden() {
+        return ['password']
+    }
+
+    static getValidationRules() {
+        return {
+            username: 'required',
+            email: 'required|email',
+            password: 'required',
+            firstname: 'required',
+            lastname: 'required',
+            avatar: 'string'
+        }
+    }
 }
 
 module.exports = User
